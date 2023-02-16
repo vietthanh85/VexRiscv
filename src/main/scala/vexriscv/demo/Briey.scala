@@ -182,7 +182,7 @@ class Briey(val config: BrieyConfig) extends Component{
     val vgaClk     = in Bool()
 
     //Main components IO
-    val jtag       = slave(Jtag())
+    // val jtag       = slave(Jtag()) // ThanhDV
     val sdram      = master(SdramInterface(sdramLayout))
 
     //Peripherals IO
@@ -308,7 +308,8 @@ class Briey(val config: BrieyConfig) extends Component{
         }
         case plugin : DebugPlugin      => debugClockDomain{
           resetCtrl.axiReset setWhen(RegNext(plugin.io.resetOut))
-          io.jtag <> plugin.io.bus.fromJtag()
+          // io.jtag <> plugin.io.bus.fromJtag() // ThanhDV
+           plugin.io.bus.fromVJtag() // ThanhDV
         }
         case _ =>
       }
@@ -463,10 +464,11 @@ object BrieySim {
       val clockDomain = ClockDomain(dut.io.axiClk, dut.io.asyncReset)
       clockDomain.forkStimulus(mainClkPeriod)
 
-      val tcpJtag = JtagTcp(
-        jtag = dut.io.jtag,
-        jtagClkPeriod = jtagClkPeriod
-      )
+      // ThanhDV
+      // val tcpJtag = JtagTcp(
+      //   jtag = dut.io.jtag,
+      //   jtagClkPeriod = jtagClkPeriod
+      // )
 
       val uartTx = UartDecoder(
         uartPin = dut.io.uart.txd,
